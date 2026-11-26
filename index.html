@@ -1,0 +1,683 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stafflys</title>
+<style>
+:root{
+--bg:#090c15;--panel:#111725;--panel2:#192238;
+--border:#28334b;--blue:#6689ff;--purple:#a47aff;
+--text:#f4f6ff;--muted:#99a5bd;--green:#67dba6;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);
+font-family:Inter,system-ui,sans-serif;height:100dvh;overflow:hidden}
+button,input,select{font:inherit}
+button{cursor:pointer}
+.app{display:flex;height:100dvh;overflow:hidden}
+.sidebar{width:240px;flex-shrink:0;background:#0d121e;
+border-right:1px solid var(--border);padding:20px 13px;
+display:flex;flex-direction:column;overflow:hidden}
+.logo{display:flex;align-items:center;gap:11px;padding:4px 8px 24px}
+.logo-icon{width:40px;height:40px;border-radius:12px;
+background:linear-gradient(135deg,var(--blue),var(--purple));
+display:grid;place-items:center;font-size:21px;font-weight:900}
+.logo img{width:40px;height:40px;object-fit:cover;border-radius:12px}
+.logo strong{font-size:15px}.logo small{display:block;color:var(--muted);font-size:9px;margin-top:3px}
+.nav-label{font-size:9px;letter-spacing:1.5px;color:#687792;
+padding:13px 10px 7px;font-weight:800}
+.nav{width:100%;border:0;background:none;color:#aab5ca;
+padding:10px 11px;border-radius:8px;text-align:left;
+display:flex;align-items:center;gap:11px;font-size:12px;margin:2px 0}
+.nav span{font-size:16px;width:20px;text-align:center}
+.nav:hover,.nav.active{background:#1d2945;color:white}
+.nav.active{box-shadow:inset 3px 0 var(--blue)}
+.sidebar-bottom{margin-top:auto;border-top:1px solid var(--border);
+padding:14px 8px;color:var(--muted);font-size:10px}
+.main{flex:1;min-width:0;display:flex;flex-direction:column}
+.topbar{height:61px;flex-shrink:0;border-bottom:1px solid var(--border);
+display:flex;align-items:center;justify-content:space-between;padding:0 25px}
+.breadcrumb{font-size:12px;color:var(--muted)}
+.breadcrumb b{color:white}
+.status{font-size:10px;color:var(--green)}
+.content{padding:23px 27px;flex:1;min-height:0;overflow:hidden}
+.page{display:none;height:100%;min-height:0;flex-direction:column}
+.page.active{display:flex}
+h1{font-size:25px;margin:0 0 6px;letter-spacing:-.6px}
+.subtitle{font-size:12px;color:var(--muted);margin:0 0 18px}
+.hero{border:1px solid #354779;border-radius:15px;
+background:linear-gradient(115deg,#182951,#292044);
+padding:24px;display:flex;justify-content:space-between;
+align-items:center;min-height:150px;margin-bottom:15px}
+.hero h2{font-size:25px;margin:8px 0}
+.hero p{font-size:12px;color:#c4cde1;line-height:1.6;max-width:480px}
+.hero-icon{font-size:65px}
+.action{background:linear-gradient(110deg,var(--blue),var(--purple));
+color:white;border:0;border-radius:8px;padding:10px 14px;
+font-size:11px;font-weight:750}
+.action.secondary{background:#222e49;border:1px solid #39496c}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px}
+.card{background:var(--panel);border:1px solid var(--border);
+border-radius:11px;padding:14px;min-width:0}
+.card h3{font-size:13px;margin:0 0 7px}
+.card p{font-size:11px;color:var(--muted);line-height:1.65;margin:0}
+.card-icon{font-size:20px;margin-bottom:9px}
+.stat{font-size:24px;font-weight:850}
+.stat-label{font-size:10px;color:var(--muted)}
+.section-title{font-size:13px;margin:17px 0 10px}
+.toolbar{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.search{flex:1;min-width:130px;background:var(--panel);
+border:1px solid var(--border);border-radius:8px;padding:10px;
+color:white;outline:none;font-size:11px}
+.search:focus{border-color:var(--blue)}
+select{background:var(--panel);color:white;border:1px solid var(--border);
+border-radius:8px;padding:9px;font-size:11px}
+.command-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
+gap:9px;min-height:0}
+.command{background:var(--panel);border:1px solid var(--border);
+border-radius:9px;padding:12px;cursor:pointer}
+.command:hover{border-color:var(--blue);background:#172039}
+.command strong{font-size:12px;display:block;margin-bottom:7px}
+.command small{font-size:9px;color:var(--muted)}
+.tag{font-size:9px;background:#27385f;color:#b6c9ff;
+padding:4px 7px;border-radius:5px}
+.tag.mid{background:#43305e;color:#d6bcff}
+.tag.adv{background:#59313c;color:#ffb5c2}
+.pagination{display:flex;justify-content:center;align-items:center;
+gap:12px;margin-top:auto;padding-top:12px;font-size:10px;color:var(--muted)}
+.page-btn{background:var(--panel2);border:1px solid var(--border);
+color:white;padding:7px 11px;border-radius:7px}
+.lesson-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.lesson{background:var(--panel);border:1px solid var(--border);
+border-radius:10px;padding:14px;cursor:pointer;min-width:0}
+.lesson:hover{border-color:var(--purple)}
+.lesson b{font-size:12px}
+.lesson p{font-size:10px;color:var(--muted);line-height:1.6;margin:7px 0 0}
+.lesson .more{font-size:9px;color:#a6baff;margin-top:10px}
+.command-detail{display:none}
+.modal-bg{position:fixed;inset:0;background:#000c;z-index:20;
+display:none;align-items:center;justify-content:center;padding:15px}
+.modal-bg.show{display:flex}
+.modal{width:min(550px,100%);max-height:85dvh;overflow:auto;
+background:#141b2b;border:1px solid #3b4865;border-radius:15px;padding:21px}
+.modal h2{font-size:19px;margin:0 0 12px}
+.modal h3{font-size:13px;margin:17px 0 7px}
+.modal p{font-size:12px;color:#bdc7dc;line-height:1.7}
+.modal ul{padding-left:19px;color:#bdc7dc;font-size:12px;line-height:1.8}
+.close{float:right;background:#28334b;border:0;color:white;
+padding:7px 10px;border-radius:7px}
+.code{background:#080d18;color:#a9c2ff;border-radius:8px;
+padding:11px;font-size:11px;overflow-wrap:anywhere}
+.answer{display:flex;gap:9px;align-items:flex-start;
+padding:10px;background:var(--panel2);border-radius:8px;
+margin:7px 0;font-size:11px;cursor:pointer}
+.answer input{accent-color:var(--blue)}
+.mobile-menu{display:none;background:none;border:0;color:white;font-size:21px}
+@media(max-width:850px){
+.sidebar{width:205px}.content{padding:17px}
+.grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+.command-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:600px){
+.sidebar{position:fixed;z-index:10;top:0;bottom:0;left:-250px;
+width:245px;transition:.2s;box-shadow:10px 0 30px #0009}
+.sidebar.open{left:0}
+.mobile-menu{display:block}
+.topbar{height:55px;padding:0 12px}
+.content{padding:14px 11px}
+h1{font-size:21px}.hero{padding:15px;min-height:130px}
+.hero h2{font-size:19px}.hero-icon{font-size:42px}
+.grid{gap:7px}.card{padding:10px}
+.command-grid{gap:7px}.command{padding:9px}
+.lesson-list{gap:7px}
+.lesson{padding:10px}
+.status{font-size:8px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="sidebar" id="sidebar">
+<div class="logo">
+<img src="https://i.ibb.co/Tx5JrNfn/IMG-2609.jpg" alt="Logo Stafflys">
+<div><strong>Stafflys</strong><small>STAFF LEARNING CENTER</small></div>
+</div>
+<div class="nav-label">GENERAL</div>
+<button class="nav active" data-page="home"><span>⌂</span> Inicio</button>
+<button class="nav" data-page="commands"><span>⌘</span> Comandos</button>
+<button class="nav" data-page="academy"><span>🎓</span> Academia</button>
+<div class="nav-label">APRENDIZAJE</div>
+<button class="nav" data-page="rules"><span>⚖</span> Normativas</button>
+<button class="nav" data-page="attention"><span>✉</span> Atención al usuario</button>
+<button class="nav" data-page="cases"><span>◈</span> Casos prácticos</button>
+<button class="nav" data-page="templates"><span>▤</span> Plantillas</button>
+<button class="nav" data-page="dictionary"><span>📖</span> Diccionario</button>
+<div class="nav-label">FORMACIÓN</div>
+<button class="nav" data-page="exam"><span>✓</span> Exámenes</button>
+<button class="nav" data-page="bots"><span>🤖</span> Bots</button>
+<button class="nav" data-page="ranks"><span>♜</span> Rangos Staff</button>
+<div class="sidebar-bottom">Stafflys<br>Aprendé. Moderá. Mejorá.</div>
+</aside>
+
+<main class="main">
+<header class="topbar">
+<div style="display:flex;align-items:center;gap:12px">
+<button class="mobile-menu" onclick="toggleMenu()">☰</button>
+<div class="breadcrumb">Academia / <b id="crumb">Inicio</b></div>
+</div>
+<div class="status">● Plataforma disponible</div>
+</header>
+
+<div class="content">
+
+<section class="page active" id="home">
+<div class="hero">
+<div>
+<h2>Aprendé a ser un gran Staff.</h2>
+<p>Descubrí cómo funciona la moderación, aprendé comandos, resolvé situaciones y desarrollá tus habilidades para gestionar comunidades.</p>
+<button class="action" onclick="showPage('academy')">Comenzar aprendizaje →</button>
+</div>
+<div class="hero-icon">🎓</div>
+</div>
+<div class="grid">
+<div class="card"><div class="stat">40+</div><div class="stat-label">Comandos explicados</div></div>
+<div class="card"><div class="stat">10</div><div class="stat-label">Secciones educativas</div></div>
+<div class="card"><div class="stat">3</div><div class="stat-label">Niveles de exámenes</div></div>
+</div>
+<h3 class="section-title">Explorá la academia</h3>
+<div class="grid">
+<div class="card" onclick="showPage('commands')" style="cursor:pointer"><div class="card-icon">⌘</div><h3>Comandos</h3><p>Aprendé herramientas de moderación y administración.</p></div>
+<div class="card" onclick="showPage('cases')" style="cursor:pointer"><div class="card-icon">⚖️</div><h3>Situaciones reales</h3><p>Descubrí cómo actuar ante problemas de comunidad.</p></div>
+<div class="card" onclick="showPage('exam')" style="cursor:pointer"><div class="card-icon">🏆</div><h3>Exámenes</h3><p>Comprobá tus conocimientos en tres niveles.</p></div>
+</div>
+</section>
+
+<section class="page" id="commands">
+<h1>Comandos</h1>
+<p class="subtitle">Qué son, para qué sirven, su función y ejemplos de uso.</p>
+<div class="toolbar">
+<input class="search" id="search" placeholder="Buscar comando..." oninput="renderCommands()">
+<select id="level" onchange="renderCommands()">
+<option value="all">Todos los niveles</option>
+<option>Básico</option><option>Intermedio</option><option>Avanzado</option>
+</select>
+<select id="category" onchange="renderCommands()">
+<option value="all">Todas las categorías</option>
+<option>Moderación</option><option>Usuarios</option><option>Canales</option><option>Registros</option><option>Roles</option>
+</select>
+</div>
+<div class="command-grid" id="commandGrid"></div>
+<div class="pagination">
+<button class="page-btn" onclick="changePage(-1)">← Anterior</button>
+<span id="pageNumber">1 / 1</span>
+<button class="page-btn" onclick="changePage(1)">Siguiente →</button>
+</div>
+</section>
+
+<section class="page" id="academy">
+<h1>Academia de Staff</h1>
+<p class="subtitle">Formate desde tus primeros pasos hasta la administración de comunidades.</p>
+<div class="lesson-list">
+<div class="lesson" onclick="openLesson('helper')"><b>🟢 Helper</b><p>Atención, orientación y ayuda a los miembros.</p><div class="more">VER FORMACIÓN →</div></div>
+<div class="lesson" onclick="openLesson('mod')"><b>🔵 Moderador</b><p>Control de comunidad y aplicación de sanciones.</p><div class="more">VER FORMACIÓN →</div></div>
+<div class="lesson" onclick="openLesson('admin')"><b>🟣 Administrador</b><p>Gestión de permisos, canales y configuraciones.</p><div class="more">VER FORMACIÓN →</div></div>
+<div class="lesson" onclick="openLesson('manager')"><b>🟡 Manager</b><p>Organización y supervisión del equipo.</p><div class="more">VER FORMACIÓN →</div></div>
+<div class="lesson" onclick="openLesson('communication')"><b>💬 Comunicación</b><p>Cómo hablar con usuarios y compañeros.</p><div class="more">VER FORMACIÓN →</div></div>
+<div class="lesson" onclick="openLesson('teamwork')"><b>🤝 Trabajo en equipo</b><p>Coordinación, responsabilidad y colaboración.</p><div class="more">VER FORMACIÓN →</div></div>
+</div>
+</section>
+
+<section class="page" id="rules">
+<h1>Normativas</h1>
+<p class="subtitle">Reglas y procedimientos que todo miembro del equipo debe conocer.</p>
+<div class="lesson-list">
+<div class="lesson" onclick="openRule(0)"><b>⚖️ Imparcialidad</b><p>Todos los usuarios deben recibir un trato justo.</p></div>
+<div class="lesson" onclick="openRule(1)"><b>📋 Evidencias</b><p>Revisar pruebas antes de tomar decisiones.</p></div>
+<div class="lesson" onclick="openRule(2)"><b>🔒 Confidencialidad</b><p>Proteger información interna y privada.</p></div>
+<div class="lesson" onclick="openRule(3)"><b>📏 Sanciones</b><p>Aplicar medidas proporcionales a las infracciones.</p></div>
+<div class="lesson" onclick="openRule(4)"><b>💬 Conducta</b><p>Mantener respeto dentro y fuera del equipo.</p></div>
+<div class="lesson" onclick="openRule(5)"><b>📝 Responsabilidad</b><p>Registrar acciones y comunicar decisiones.</p></div>
+<div class="lesson" onclick="openRule(6)"><b>🚫 Abuso de permisos</b><p>No utilizar el rango para beneficio personal.</p></div>
+<div class="lesson" onclick="openRule(7)"><b>⏱️ Actividad</b><p>Cumplir horarios y avisar ausencias.</p></div>
+</div>
+</section>
+
+<section class="page" id="attention">
+<h1>Atención al usuario</h1>
+<p class="subtitle">Aprendé a gestionar consultas, reportes y problemas.</p>
+<div class="lesson-list">
+<div class="lesson" onclick="openLesson('ticket')"><b>📩 Atención de tickets</b><p>Recibir, investigar y resolver consultas.</p></div>
+<div class="lesson" onclick="openLesson('report')"><b>🚨 Reportes</b><p>Analizar denuncias y revisar evidencias.</p></div>
+<div class="lesson" onclick="openLesson('appeal')"><b>⚖️ Apelaciones</b><p>Revisar sanciones y solicitudes de revisión.</p></div>
+<div class="lesson" onclick="openLesson('conflict')"><b>🤝 Conflictos</b><p>Mediar entre miembros de la comunidad.</p></div>
+</div>
+</section>
+
+<section class="page" id="cases">
+<h1>Casos prácticos</h1>
+<p class="subtitle">Situaciones que pueden ocurrir en un servidor de Discord. Aprendé a resolverlas.</p>
+<div class="lesson-list">
+<div class="lesson" onclick="caseOpen(0)"><b>01 · Discusión en el chat</b><p>Dos miembros comienzan a insultarse públicamente.</p><div class="more">ANALIZAR CASO →</div></div>
+<div class="lesson" onclick="caseOpen(1)"><b>02 · Reporte sin pruebas</b><p>Un usuario acusa a otro, pero no presenta evidencias.</p><div class="more">ANALIZAR CASO →</div></div>
+<div class="lesson" onclick="caseOpen(2)"><b>03 · Amigo infractor</b><p>Tu amigo incumple una norma del servidor.</p><div class="more">ANALIZAR CASO →</div></div>
+<div class="lesson" onclick="caseOpen(3)"><b>04 · Apelación de ban</b><p>Un usuario asegura que su sanción fue injusta.</p><div class="more">ANALIZAR CASO →</div></div>
+<div class="lesson" onclick="caseOpen(4)"><b>05 · Posible Raid</b><p>Muchos usuarios nuevos entran y publican mensajes repetidos.</p><div class="more">ANALIZAR CASO →</div></div>
+<div class="lesson" onclick="caseOpen(5)"><b>06 · Staff conflictivo</b><p>Un miembro del equipo abusa de sus permisos.</p><div class="more">ANALIZAR CASO →</div></div>
+<div class="lesson" onclick="caseOpen(6)"><b>07 · Spam por mensajes privados</b><p>Varios usuarios denuncian mensajes no deseados.</p><div class="more">ANALIZAR CASO →</div></div>
+<div class="lesson" onclick="caseOpen(7)"><b>08 · Error en una sanción</b><p>Un Moderador sanciona a la persona equivocada.</p><div class="more">ANALIZAR CASO →</div></div>
+</div>
+</section>
+
+<section class="page" id="templates">
+<h1>Plantillas profesionales</h1>
+<p class="subtitle">Ejemplos de mensajes para situaciones habituales del Staff.</p>
+<div class="lesson-list">
+<div class="lesson" onclick="templateOpen(0)"><b>⚠️ Advertencia</b><p>Comunicación de una infracción.</p></div>
+<div class="lesson" onclick="templateOpen(1)"><b>⛔ Notificación de ban</b><p>Información de una sanción.</p></div>
+<div class="lesson" onclick="templateOpen(2)"><b>📩 Respuesta de ticket</b><p>Atención de una consulta.</p></div>
+<div class="lesson" onclick="templateOpen(3)"><b>⚖️ Respuesta de apelación</b><p>Resultado de una revisión.</p></div>
+<div class="lesson" onclick="templateOpen(4)"><b>🔒 Cierre de ticket</b><p>Finalización de una consulta.</p></div>
+<div class="lesson" onclick="templateOpen(5)"><b>📢 Anuncio Staff</b><p>Comunicado para la comunidad.</p></div>
+<div class="lesson" onclick="templateOpen(6)"><b>👥 Mensaje interno</b><p>Comunicación entre compañeros.</p></div>
+<div class="lesson" onclick="templateOpen(7)"><b>🕒 Aviso de ausencia</b><p>Notificación de inactividad.</p></div>
+</div>
+</section>
+
+<section class="page" id="dictionary">
+<h1>Diccionario</h1>
+<p class="subtitle">Terminología utilizada en administración y moderación.</p>
+<input class="search" id="dictSearch" placeholder="Buscar término..." oninput="renderDictionary()" style="margin-bottom:12px">
+<div class="lesson-list" id="dictionaryGrid"></div>
+</section>
+
+<section class="page" id="exam">
+<h1>Centro de exámenes</h1>
+<p class="subtitle">Elegí tu nivel y comprobá tus conocimientos.</p>
+<div class="grid">
+<div class="card">
+<div class="card-icon">🟢</div><h3>Nivel Básico</h3>
+<p>Comandos, conceptos y responsabilidades iniciales.</p>
+<p style="margin:12px 0"><b>5 preguntas</b></p>
+<button class="action" onclick="startQuiz('Básico')">Comenzar →</button>
+</div>
+<div class="card">
+<div class="card-icon">🔵</div><h3>Nivel Intermedio</h3>
+<p>Sanciones, reportes, tickets y procedimientos.</p>
+<p style="margin:12px 0"><b>7 preguntas</b></p>
+<button class="action" onclick="startQuiz('Intermedio')">Comenzar →</button>
+</div>
+<div class="card">
+<div class="card-icon">🟣</div><h3>Nivel Experto</h3>
+<p>Gestión de equipos, seguridad y casos complejos.</p>
+<p style="margin:12px 0"><b>10 preguntas</b></p>
+<button class="action" onclick="startQuiz('Experto')">Comenzar →</button>
+</div>
+</div>
+<div class="card" style="margin-top:15px">
+<h3>📜 Sistema de evaluación</h3>
+<p>Respondé todas las preguntas. Al terminar recibirás tu puntuación y podrás revisar tus respuestas. La aprobación requiere al menos un 70%.</p>
+</div>
+</section>
+
+<section class="page" id="bots">
+<h1>Biblioteca de bots</h1>
+<p class="subtitle">Conocé herramientas de Discord y sus principales funciones.</p>
+<div class="toolbar">
+<input class="search" id="botSearch" placeholder="Buscar bot..." oninput="renderBots()">
+</div>
+<div class="lesson-list" id="botGrid"></div>
+</section>
+
+<section class="page" id="ranks">
+<h1>Jerarquía Staff</h1>
+<p class="subtitle">Conocé las responsabilidades, funciones y límites de cada rango.</p>
+<div class="lesson-list">
+<div class="lesson" onclick="openRank(0)"><b>🟢 Helper</b><p>Asistencia y orientación a los miembros.</p><div class="more">VER RESPONSABILIDADES →</div></div>
+<div class="lesson" onclick="openRank(1)"><b>🔵 Moderador</b><p>Moderación y aplicación de normas.</p><div class="more">VER RESPONSABILIDADES →</div></div>
+<div class="lesson" onclick="openRank(2)"><b>🟣 Administrador</b><p>Configuración y gestión del servidor.</p><div class="more">VER RESPONSABILIDADES →</div></div>
+<div class="lesson" onclick="openRank(3)"><b>🟡 Manager</b><p>Coordinación y supervisión del equipo.</p><div class="more">VER RESPONSABILIDADES →</div></div>
+<div class="lesson" onclick="openRank(4)"><b>🔴 Owner</b><p>Dirección y responsabilidad general.</p><div class="more">VER RESPONSABILIDADES →</div></div>
+</div>
+</section>
+
+</div>
+</main>
+</div>
+
+<div class="modal-bg" id="modalBg" onclick="if(event.target===this)closeModal()">
+<div class="modal">
+<button class="close" onclick="closeModal()">✕</button>
+<div id="modalContent"></div>
+</div>
+</div>
+
+<script>
+const commands=[
+["ban","Básico","Moderación","Bloquea el acceso de un usuario al servidor.","/ban @usuario razón"],
+["unban","Básico","Moderación","Retira el bloqueo de un usuario.","/unban ID"],
+["kick","Básico","Moderación","Expulsa a un usuario sin impedir que vuelva a entrar.","/kick @usuario"],
+["mute","Básico","Moderación","Restringe la posibilidad de comunicarse.","/mute @usuario"],
+["unmute","Básico","Moderación","Retira una restricción de comunicación.","/unmute @usuario"],
+["warn","Básico","Moderación","Registra una advertencia por incumplir una norma.","/warn @usuario"],
+["unwarn","Básico","Moderación","Retira una advertencia registrada.","/unwarn @usuario"],
+["clear","Básico","Moderación","Elimina una cantidad de mensajes.","/clear 10"],
+["purge","Básico","Moderación","Limpia mensajes que cumplen ciertos criterios.","/purge 20"],
+["timeout","Básico","Moderación","Restringe temporalmente la comunicación.","/timeout @usuario 10m"],
+["untimeout","Básico","Moderación","Retira un tiempo de espera.","/untimeout @usuario"],
+["slowmode","Básico","Canales","Establece un intervalo entre mensajes.","/slowmode 5s"],
+["lock","Básico","Canales","Bloquea el envío de mensajes en un canal.","/lock #general"],
+["unlock","Básico","Canales","Vuelve a permitir mensajes en un canal.","/unlock #general"],
+["nickname","Básico","Usuarios","Cambia el apodo de un miembro.","/nickname @usuario Nombre"],
+["userinfo","Básico","Usuarios","Muestra información de un usuario.","/userinfo @usuario"],
+["serverinfo","Básico","Usuarios","Muestra información del servidor.","/serverinfo"],
+["avatar","Básico","Usuarios","Muestra el avatar de un usuario.","/avatar @usuario"],
+["roleinfo","Básico","Roles","Muestra información de un rol.","/roleinfo @rol"],
+["channelinfo","Básico","Canales","Muestra información de un canal.","/channelinfo #general"],
+["tempban","Intermedio","Moderación","Bloquea a un usuario durante un tiempo determinado.","/tempban @usuario 7d"],
+["tempmute","Intermedio","Moderación","Restringe la comunicación temporalmente.","/tempmute @usuario 1h"],
+["softban","Intermedio","Moderación","Expulsa a un usuario y puede eliminar mensajes recientes.","/softban @usuario"],
+["jail","Intermedio","Moderación","Restringe a un miembro mediante un rol configurado.","/jail @usuario"],
+["unjail","Intermedio","Moderación","Retira la restricción del sistema jail.","/unjail @usuario"],
+["history","Intermedio","Registros","Consulta el historial de sanciones.","/history @usuario"],
+["warnlist","Intermedio","Registros","Muestra las advertencias registradas.","/warnlist @usuario"],
+["modlogs","Intermedio","Registros","Consulta registros de moderación.","/modlogs @usuario"],
+["addrole","Intermedio","Roles","Asigna un rol a un miembro.","/addrole @usuario @rol"],
+["removerole","Intermedio","Roles","Retira un rol de un miembro.","/removerole @usuario @rol"],
+["role","Intermedio","Roles","Gestiona roles según el bot utilizado.","/role @usuario @rol"],
+["report","Intermedio","Moderación","Envía una denuncia al equipo.","/report @usuario"],
+["lockdown","Intermedio","Canales","Aplica restricciones temporales en canales.","/lockdown"],
+["announce","Intermedio","Canales","Publica un anuncio en un canal.","/announce mensaje"],
+["move","Intermedio","Usuarios","Mueve un miembro entre canales de voz.","/move @usuario"],
+["deafen","Intermedio","Usuarios","Ensordece a un miembro en voz.","/deafen @usuario"],
+["undeafen","Intermedio","Usuarios","Retira el ensordecimiento.","/undeafen @usuario"],
+["massban","Avanzado","Moderación","Permite gestionar sanciones para varios usuarios.","/massban"],
+["setlog","Avanzado","Registros","Configura el canal de registros.","/setlog #logs"],
+["automod","Avanzado","Moderación","Configura reglas automáticas de moderación.","/automod"],
+["antinuke","Avanzado","Registros","Configura protecciones contra acciones destructivas.","/antinuke"],
+["permissions","Avanzado","Roles","Gestiona permisos de acceso.","/permissions"]
+];
+
+let currentPage=1,filtered=[];
+const perPage=9;
+function renderCommands(){
+const q=document.getElementById("search").value.toLowerCase();
+const l=document.getElementById("level").value;
+const cat=document.getElementById("category").value;
+filtered=commands.filter(c=>(c[0].includes(q)||c[3].toLowerCase().includes(q))&&(l==="all"||c[1]===l)&&(cat==="all"||c[2]===cat));
+const pages=Math.max(1,Math.ceil(filtered.length/perPage));
+currentPage=Math.min(currentPage,pages);
+const items=filtered.slice((currentPage-1)*perPage,currentPage*perPage);
+document.getElementById("commandGrid").innerHTML=items.length?items.map(c=>`
+<div class="command" onclick="showCommand(${commands.indexOf(c)})">
+<strong>/${c[0]}</strong>
+<div style="display:flex;gap:7px;align-items:center">
+<span class="tag ${c[1]==="Intermedio"?"mid":c[1]==="Avanzado"?"adv":""}">${c[1]}</span>
+<small>${c[2]}</small></div></div>`).join(""):'<div>No se encontraron comandos.</div>';
+document.getElementById("pageNumber").textContent=currentPage+" / "+pages;
+}
+function changePage(n){currentPage=Math.max(1,currentPage+n);renderCommands()}
+function showCommand(i){
+const c=commands[i];
+openModal("/"+c[0],`
+<span class="tag">${c[1]}</span>
+<h3>¿Qué es?</h3><p>Es una herramienta utilizada para administrar y moderar un servidor de Discord.</p>
+<h3>¿Para qué sirve?</h3><p>${c[3]}</p>
+<h3>Función</h3><p>Permite al personal realizar esta acción de forma controlada, siempre respetando los permisos y las reglas.</p>
+<h3>Ejemplo ilustrativo</h3><div class="code">${c[4]}</div>
+<p>La sintaxis puede cambiar según el bot. No todos los comandos existen de forma nativa en Discord.</p>`);
+}
+
+function showPage(id){
+document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+document.getElementById(id).classList.add("active");
+document.querySelectorAll(".nav").forEach(b=>b.classList.toggle("active",b.dataset.page===id));
+const b=document.querySelector(`[data-page="${id}"]`);
+document.getElementById("crumb").textContent=b?b.textContent.trim():"Inicio";
+document.getElementById("sidebar").classList.remove("open");
+if(id==="commands")renderCommands();
+}
+document.querySelectorAll(".nav").forEach(b=>b.onclick=()=>showPage(b.dataset.page));
+function toggleMenu(){document.getElementById("sidebar").classList.toggle("open")}
+function openModal(title,body){
+document.getElementById("modalContent").innerHTML=`<h2>${title}</h2>${body}`;
+document.getElementById("modalBg").classList.add("show");
+}
+function closeModal(){document.getElementById("modalBg").classList.remove("show")}
+
+const lessons={
+helper:["Helper",`
+<h3>¿Cuál es su función?</h3>
+<p>El Helper es uno de los primeros rangos dentro del equipo. Su objetivo principal es ayudar a los miembros y facilitar su experiencia en la comunidad.</p>
+<h3>Responsabilidades</h3>
+<ul><li>Responder preguntas frecuentes.</li><li>Orientar a usuarios nuevos.</li><li>Atender consultas sencillas.</li><li>Derivar reportes al personal correspondiente.</li><li>Ayudar a mantener un ambiente agradable.</li><li>Conocer las reglas del servidor.</li></ul>
+<h3>¿Qué debe evitar?</h3>
+<ul><li>Aplicar sanciones sin autorización.</li><li>Compartir información privada.</li><li>Discutir con usuarios.</li><li>Prometer resultados que no puede garantizar.</li></ul>
+<h3>Habilidades necesarias</h3><p>Paciencia, comunicación, responsabilidad, respeto y disposición para ayudar.</p>`],
+mod:["Moderador",`
+<h3>¿Cuál es su función?</h3><p>El Moderador se encarga de mantener el orden y hacer cumplir las normas de la comunidad.</p>
+<h3>Responsabilidades</h3><ul><li>Revisar reportes y denuncias.</li><li>Analizar evidencias.</li><li>Aplicar advertencias y sanciones.</li><li>Controlar conversaciones y canales.</li><li>Registrar las acciones realizadas.</li><li>Resolver conflictos entre usuarios.</li></ul>
+<h3>¿Qué debe evitar?</h3><ul><li>Abusar de sus permisos.</li><li>Favorecer amigos.</li><li>Sancionar sin pruebas.</li><li>Utilizar herramientas para asuntos personales.</li></ul>
+<h3>Habilidades necesarias</h3><p>Imparcialidad, criterio, conocimiento de las normas y capacidad para resolver conflictos.</p>`],
+admin:["Administrador",`
+<h3>¿Cuál es su función?</h3><p>Gestiona la estructura y el funcionamiento técnico y organizativo del servidor.</p>
+<h3>Responsabilidades</h3><ul><li>Gestionar roles y permisos.</li><li>Configurar canales y categorías.</li><li>Supervisar sistemas de moderación.</li><li>Revisar registros y seguridad.</li><li>Apoyar a Moderadores y Helpers.</li><li>Resolver problemas de configuración.</li></ul>
+<h3>¿Qué debe evitar?</h3><p>Modificar configuraciones críticas sin autorización, eliminar registros necesarios o entregar permisos peligrosos sin revisión.</p>
+<h3>Habilidades necesarias</h3><p>Conocimientos técnicos, organización, criterio y experiencia en administración.</p>`],
+manager:["Manager",`
+<h3>¿Cuál es su función?</h3><p>Coordina el equipo de Staff y supervisa el trabajo de sus integrantes.</p>
+<h3>Responsabilidades</h3><ul><li>Organizar tareas y actividades.</li><li>Supervisar la actividad del equipo.</li><li>Revisar problemas internos.</li><li>Evaluar el desempeño.</li><li>Coordinar reuniones.</li><li>Comunicar decisiones administrativas.</li></ul>
+<h3>¿Qué debe evitar?</h3><p>Tomar decisiones arbitrarias, generar conflictos internos o utilizar su posición para intimidar a otros miembros.</p>
+<h3>Habilidades necesarias</h3><p>Liderazgo, comunicación, planificación y resolución de problemas.</p>`],
+communication:["Comunicación",`<h3>Comunicación profesional</h3><p>Un buen Staff debe expresarse de forma clara, respetuosa y comprensible.</p><h3>Buenas prácticas</h3><ul><li>Leer antes de responder.</li><li>Evitar provocaciones.</li><li>Explicar las decisiones.</li><li>Utilizar un tono adecuado.</li><li>No discutir públicamente asuntos internos.</li></ul>`],
+teamwork:["Trabajo en equipo",`<h3>Colaboración</h3><p>El equipo debe trabajar coordinadamente para conseguir una comunidad organizada.</p><h3>Buenas prácticas</h3><ul><li>Respetar las decisiones del equipo.</li><li>Compartir información relevante.</li><li>Solicitar ayuda cuando sea necesario.</li><li>Evitar conflictos personales.</li><li>Comunicar ausencias.</li><li>Respetar la jerarquía y los límites de cada puesto.</li></ul>`],
+ticket:["Atención de tickets",`<h3>Procedimiento</h3><ul><li>Saludar al usuario.</li><li>Leer completamente su consulta.</li><li>Solicitar información necesaria.</li><li>Investigar el problema.</li><li>Ofrecer una solución clara.</li><li>Confirmar que el usuario fue atendido.</li><li>Cerrar el ticket correctamente.</li></ul><h3>Importante</h3><p>No compartas conversaciones privadas con personas que no estén autorizadas.</p>`],
+report:["Revisión de reportes",`<h3>Procedimiento</h3><ul><li>Identificar a los usuarios involucrados.</li><li>Solicitar capturas o contexto.</li><li>Revisar mensajes y registros.</li><li>Comparar los hechos con las reglas.</li><li>Consultar a otro Staff si es necesario.</li><li>Registrar la resolución.</li></ul><p>No sanciones basándote únicamente en una acusación.</p>`],
+appeal:["Apelaciones",`<h3>Procedimiento</h3><ul><li>Identificar la sanción original.</li><li>Revisar la evidencia.</li><li>Escuchar la explicación del usuario.</li><li>Consultar los registros.</li><li>Decidir si se mantiene, modifica o retira la sanción.</li><li>Comunicar la decisión y su motivo.</li></ul>`],
+conflict:["Resolución de conflictos",`<h3>Procedimiento</h3><ul><li>Escuchar a las partes.</li><li>Evitar tomar partido.</li><li>Identificar el origen del problema.</li><li>Evitar que la discusión continúe.</li><li>Buscar una solución basada en las reglas.</li><li>Solicitar apoyo si el conflicto supera tus responsabilidades.</li></ul>`]
+};
+function openLesson(k){const l=lessons[k];openModal(l[0],l[1])}
+
+const rules=[
+["Imparcialidad","Todos los miembros deben recibir un trato justo. Las amistades, diferencias personales o rangos no deben influir en la aplicación de las reglas.","Si un amigo incumple una norma, debe recibir el mismo procedimiento que cualquier otro usuario."],
+["Evidencias","Antes de aplicar una sanción se deben revisar los hechos, el contexto y las pruebas disponibles.","No se debe sancionar por rumores o acusaciones sin verificar."],
+["Confidencialidad","La información privada de usuarios y las conversaciones internas deben protegerse.","No publiques capturas de tickets privados ni datos personales."],
+["Sanciones","Las sanciones deben ser coherentes, proporcionales y basadas en las normas del servidor.","Una infracción leve no debe recibir automáticamente la misma sanción que una infracción grave."],
+["Conducta","Los miembros del equipo deben mantener una actitud respetuosa y profesional.","No insultar, provocar, amenazar ni utilizar el rango para intimidar."],
+["Responsabilidad","Cada acción administrativa debe realizarse con criterio y dejar constancia cuando corresponda.","Registrar una sanción con su motivo y evidencia disponible."],
+["Abuso de permisos","Los permisos administrativos no deben utilizarse para beneficio personal ni para perjudicar a otros.","No eliminar canales, expulsar usuarios o modificar roles por venganza."],
+["Actividad","Cada servidor puede establecer horarios y requisitos de actividad para su equipo.","Avisar a un superior cuando se necesite una ausencia."]
+];
+function openRule(i){
+const r=rules[i];
+openModal(r[0],`<p>${r[1]}</p><h3>Ejemplo</h3><p>${r[2]}</p><h3>Objetivo</h3><p>Mantener una administración transparente, organizada y justa.</p>`);
+}
+
+const cases=[
+["Discusión en el chat","Dos usuarios comienzan a insultarse en un canal público.","Revisá el contexto y los mensajes. Si corresponde, pedí que detengan la discusión y aplicá las normas de forma proporcional. Registrá la actuación."],
+["Reporte sin pruebas","Un usuario acusa a otro de incumplir las normas, pero no presenta capturas ni información suficiente.","Pedí más información y revisá los registros disponibles. No sanciones hasta contar con elementos suficientes."],
+["Amigo infractor","Un amigo tuyo incumple una regla y espera que lo dejes pasar.","Aplicá el procedimiento habitual. Si existe un conflicto de interés, solicitá que otro miembro del equipo revise el caso."],
+["Apelación de ban","Un usuario afirma que su expulsión fue injusta.","Revisá la sanción, su motivo, el historial y las pruebas. Escuchá su explicación y comunicá una decisión fundamentada."],
+["Posible Raid","En pocos minutos entran numerosos usuarios nuevos y publican mensajes repetidos.","Avisá al equipo, revisá la situación y activá las medidas de protección autorizadas. Conservá registros y evitá sanciones indiscriminadas."],
+["Staff conflictivo","Un miembro del equipo utiliza sus permisos para perjudicar a usuarios.","Guardá los registros disponibles, informá a un superior y evitá enfrentamientos personales. La revisión debe realizarse de forma imparcial."],
+["Spam por privados","Varios usuarios denuncian que reciben mensajes no deseados de una cuenta.","Recopilá las denuncias, orientá a los afectados y revisá las herramientas de protección disponibles. No solicites datos privados innecesarios."],
+["Error en una sanción","Un Moderador sanciona por error a la persona equivocada.","Verificá el error, informá al responsable y corregí la sanción mediante el procedimiento autorizado. Registrá la rectificación."]
+];
+function caseOpen(i){
+const c=cases[i];
+openModal(c[0],`<h3>Situación</h3><p>${c[1]}</p><h3>Resolución recomendada</h3><p>${c[2]}</p><h3>¿Qué se aprende?</h3><p>La importancia de actuar con criterio, revisar los hechos y seguir las normativas.</p>`);
+}
+
+const templates=[
+["Advertencia","⚠️ **AVISO DE MODERACIÓN**\n\nHola, @usuario.\nHemos detectado un incumplimiento de las normas del servidor.\n\n**Motivo:** [Motivo]\n**Regla:** [Número o nombre]\n\nTe pedimos que evites repetir esta conducta. Gracias por colaborar."],
+["Notificación de ban","⛔ **NOTIFICACIÓN DE SANCIÓN**\n\nHola, @usuario.\nSe ha aplicado una sanción de bloqueo a tu cuenta.\n\n**Motivo:** [Motivo]\n**Duración:** [Duración]\n**Responsable:** [Staff]\n\nSi considerás que hubo un error, podés solicitar una revisión por los canales correspondientes."],
+["Respuesta de ticket","📩 **ATENCIÓN DEL STAFF**\n\n¡Hola! Gracias por contactar con el equipo.\n\nHemos recibido tu consulta y vamos a revisar la información proporcionada.\n\nTe responderemos cuando tengamos una actualización. Gracias por tu paciencia."],
+["Respuesta de apelación","⚖️ **RESULTADO DE APELACIÓN**\n\nHola, @usuario.\nHemos revisado tu solicitud y los registros relacionados.\n\n**Decisión:** [Aceptada / Rechazada]\n**Motivo:** [Explicación]\n\nGracias por presentar tu solicitud."],
+["Cierre de ticket","🔒 **TICKET FINALIZADO**\n\nTu consulta ha sido atendida por el equipo.\n\nSi necesitás ayuda nuevamente, podés abrir otro ticket.\n\n¡Gracias por contactar con nosotros!"],
+["Anuncio Staff","📢 **COMUNICADO DEL EQUIPO**\n\nInformamos a la comunidad que [Anuncio].\n\n**Fecha:** [Fecha]\n**Información adicional:** [Detalles]\n\nGracias por su atención."],
+["Mensaje interno","👥 **COMUNICACIÓN INTERNA**\n\n**Tema:** [Tema]\n**Información:** [Detalles]\n**Acción necesaria:** [Tarea]\n**Responsable:** [Staff]\n\nPor favor, mantenemos la comunicación en el canal correspondiente."],
+["Aviso de ausencia","🕒 **AVISO DE AUSENCIA**\n\nInformo que estaré ausente desde [Fecha] hasta [Fecha].\n\n**Motivo:** [Opcional]\n**Tareas pendientes:** [Detalles]\n\nGracias por la comprensión."]
+];
+function templateOpen(i){
+const t=templates[i];
+openModal(t[0],`<div class="code" style="white-space:pre-wrap">${escapeHTML(t[1])}</div><button class="action" style="margin-top:12px" onclick="copyText(${JSON.stringify(t[1])})">Copiar plantilla</button>`);
+}
+function escapeHTML(s){return s.replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;")}
+
+const ranks=[
+["Helper","🟢","Es un rango de apoyo y atención inicial.","Ayudar a usuarios, responder dudas, orientar a nuevos miembros y derivar problemas.","No debe aplicar sanciones administrativas fuera de sus permisos.","Comunicación, paciencia y conocimiento de las normas."],
+["Moderador","🔵","Es responsable de mantener el orden de la comunidad.","Revisar reportes, controlar conversaciones, aplicar sanciones autorizadas y registrar acciones.","No debe abusar de sus permisos ni actuar por motivos personales.","Imparcialidad, criterio y experiencia en moderación."],
+["Administrador","🟣","Gestiona la estructura y configuración del servidor.","Administrar roles, canales, permisos, bots y sistemas de seguridad.","No debe realizar cambios críticos sin autorización cuando exista una jerarquía superior.","Conocimientos técnicos y organización."],
+["Manager","🟡","Coordina y supervisa el equipo de Staff.","Organizar tareas, evaluar actividad, resolver conflictos internos y comunicar decisiones.","No debe utilizar su posición para favorecer a personas ni ignorar los procedimientos.","Liderazgo, planificación y comunicación."],
+["Owner","🔴","Es el propietario y máximo responsable del servidor.","Definir objetivos, tomar decisiones generales, gestionar la administración y establecer políticas.","Debe proteger la comunidad, los datos y la seguridad del servidor.","Responsabilidad, visión general y liderazgo."]
+];
+function openRank(i){
+const r=ranks[i];
+openModal(r[1]+" "+r[0],`<p>${r[2]}</p><h3>Responsabilidades</h3><p>${r[3]}</p><h3>Límites del rango</h3><p>${r[4]}</p><h3>Requisitos y habilidades</h3><p>${r[5]}</p>`);
+}
+
+const bots=[
+["Dyno","Moderación, automoderación, registros, comandos personalizados y roles.","Moderación"],
+["Carl-bot","Roles por reacción, registros, moderación y automatizaciones.","Moderación"],
+["MEE6","Moderación, niveles, mensajes automáticos y herramientas de comunidad.","Utilidades"],
+["ProBot","Bienvenidas, despedidas, moderación y registros.","Utilidades"],
+["Wick","Protección contra raids, seguridad y moderación.","Seguridad"],
+["Ticket Tool","Sistema de tickets, atención y gestión de consultas.","Tickets"],
+["TicketsBot","Creación y administración de tickets de soporte.","Tickets"],
+["Helper.gg","Gestión de tickets y soporte para comunidades.","Tickets"],
+["Sapphire","Automatización, moderación y utilidades.","Moderación"],
+["YAGPDB","Automoderación, comandos personalizados y roles.","Moderación"],
+["Arcane","Sistema de niveles, recompensas y moderación.","Utilidades"],
+["Statbot","Estadísticas y actividad del servidor.","Estadísticas"],
+["ServerStats","Información y estadísticas de la comunidad.","Estadísticas"],
+["Double Counter","Herramientas de verificación y protección contra cuentas alternativas.","Seguridad"],
+["Captcha.bot","Verificación de miembros mediante captcha.","Seguridad"],
+["Security Bot","Funciones de seguridad y control de acceso.","Seguridad"],
+["GiveawayBot","Organización y gestión de sorteos.","Utilidades"],
+["Poll Bot","Encuestas y votaciones.","Utilidades"],
+["Sesh","Eventos, horarios y organización de actividades.","Utilidades"],
+["Apollo","Gestión de eventos y programación de actividades.","Utilidades"],
+["Disboard","Descubrimiento y promoción de servidores.","Utilidades"],
+["PluralKit","Gestión de sistemas de pluralidad y perfiles.","Utilidades"],
+["Tatsu","Perfiles, niveles y funciones sociales.","Utilidades"],
+["FredBoat","Reproducción de música y herramientas relacionadas.","Utilidades"]
+];
+function renderBots(){
+const q=(document.getElementById("botSearch")?.value||"").toLowerCase();
+document.getElementById("botGrid").innerHTML=bots.filter(b=>(b[0]+b[1]+b[2]).toLowerCase().includes(q)).map(b=>`
+<div class="lesson" onclick="botInfo('${b[0]}')"><b>🤖 ${b[0]}</b><p>${b[1]}</p><div class="more">${b[2].toUpperCase()} · VER MÁS →</div></div>`).join("")||"<p>No se encontraron bots.</p>";
+}
+function botInfo(name){
+const b=bots.find(x=>x[0]===name);
+openModal(b[0],`<p>${b[1]}</p><h3>Categoría</h3><p>${b[2]}</p><h3>¿Qué puede aportar?</h3><p>Este bot ofrece herramientas que pueden ayudar a organizar y gestionar una comunidad de Discord. Sus funciones concretas dependen de la configuración, los permisos y las características actuales del servicio.</p><p>Antes de agregar cualquier bot, revisá sus permisos y utilizá su documentación oficial.</p>`);
+}
+
+const terms=[
+["Ban","Bloqueo de acceso a un servidor."],
+["Kick","Expulsión de un miembro."],
+["Mute","Restricción de comunicación."],
+["Warn","Advertencia por incumplir una regla."],
+["Logs","Registros de acciones y eventos."],
+["Raid","Entrada masiva y coordinada de usuarios."],
+["Spam","Envío repetitivo de mensajes no deseados."],
+["Staff","Equipo responsable de gestionar una comunidad."],
+["Permisos","Autorizaciones para realizar acciones."],
+["Ticket","Canal privado para atender consultas."],
+["Timeout","Restricción temporal de comunicación en Discord."],
+["Anti-Raid","Medidas para proteger contra entradas masivas."],
+["Appeal","Solicitud de revisión de una sanción."],
+["Alt account","Cuenta alternativa de un usuario."],
+["Slowmode","Intervalo obligatorio entre mensajes."],
+["AFK","Estado de ausencia o inactividad."],
+["Ghost Ping","Mención eliminada rápidamente."],
+["Webhook","Sistema para enviar mensajes automatizados."],
+["Discord ID","Identificador único de una cuenta o recurso."],
+["Automod","Herramienta de moderación automática."],
+["Nuke","Acción destructiva sobre un servidor."],
+["Blacklist","Lista de usuarios restringidos."]
+];
+function renderDictionary(){
+const q=document.getElementById("dictSearch").value.toLowerCase();
+document.getElementById("dictionaryGrid").innerHTML=terms.filter(t=>(t[0]+t[1]).toLowerCase().includes(q)).map(t=>`<div class="lesson"><b>${t[0]}</b><p>${t[1]}</p></div>`).join("")||"<p>No se encontraron términos.</p>";
+}
+
+const exams={
+"Básico":[
+["¿Qué significa Warn?",["Advertencia","Expulsión","Bloqueo"],0],
+["¿Qué hace un Helper?",["Gestiona permisos","Ayuda a usuarios","Administra el servidor"],1],
+["¿Qué es un Ban?",["Una bienvenida","Una encuesta","Un bloqueo"],2],
+["¿Qué deberías revisar antes de sancionar?",["Evidencias","La amistad","La antigüedad solamente"],0],
+["¿Qué son los Logs?",["Registros","Roles","Canales"],0]
+],
+"Intermedio":[
+["¿Qué es una apelación?",["Una sanción nueva","Una solicitud para revisar una sanción","Un anuncio"],1],
+["¿Qué debe hacer un Moderador ante un reporte?",["Ignorarlo","Sancionar automáticamente","Investigar el caso"],2],
+["¿Qué permite Slowmode?",["Limitar frecuencia de mensajes","Eliminar usuarios","Cambiar roles"],0],
+["¿Qué es un Modlog?",["Una bienvenida","Un registro de moderación","Un ticket"],1],
+["¿Qué es un Softban?",["Un bloqueo de voz","Un rol especial","Una expulsión que puede eliminar mensajes recientes"],2],
+["¿Qué debe hacer un Staff si se equivoca?",["Ocultarlo","Informar y corregir el error","Ignorarlo"],1],
+["¿Qué significa Timeout?",["Restricción temporal de comunicación","Expulsión permanente","Cambio de nombre"],0]
+],
+"Experto":[
+["Un Administrador abusa de sus permisos. ¿Qué hacés?",["Lo ignorás","Documentás el caso y lo elevás","Lo atacás públicamente"],1],
+["¿Qué es un conflicto de interés?",["Una consulta técnica","Un canal privado","Una situación que puede afectar la imparcialidad"],2],
+["¿Qué debería incluir un registro de sanción?",["Motivo y datos relevantes","Opiniones personales","Contraseñas"],0],
+["¿Qué es Anti-Raid?",["Un sistema de bienvenida","Una protección contra entradas masivas","Un sistema de música"],1],
+["¿Qué hacés ante una posible filtración de datos?",["La compartís","La ignorás","Avisás al responsable y protegés la información"],2],
+["¿Cómo se evalúa una apelación?",["Con pruebas y contexto","Por popularidad","Por amistad"],0],
+["¿Qué principio debe respetar un Manager?",["Favoritismo","Imparcialidad","Amenazas"],1],
+["¿Qué hacés ante un error de permisos?",["Dar más permisos","Eliminar registros","Revisar y corregir con autorización"],2],
+["¿Qué significa una gestión proporcional?",["Adecuar la respuesta a la infracción","Sancionar siempre con ban","No aplicar reglas"],0],
+["¿Qué debe hacer un Owner responsable?",["Ignorar al equipo","Proteger la comunidad y supervisar","Compartir información privada"],1]
+]};
+let quizLevel="",qi=0,score=0,answers=[];
+function startQuiz(level){
+quizLevel=level;qi=0;score=0;answers=[];
+showQuestion();
+}
+function showQuestion(){
+const q=exams[quizLevel][qi];
+openModal("Examen · "+quizLevel,`
+<div style="font-size:10px;color:#a9bcff">PREGUNTA ${qi+1} DE ${exams[quizLevel].length}</div>
+<h3>${q[0]}</h3>
+${q[1].map((a,i)=>`<label class="answer"><input type="radio" name="answer" value="${i}">${a}</label>`).join("")}
+<button class="action" style="margin-top:12px" onclick="answerQuiz()">Responder →</button>
+<div style="font-size:10px;color:var(--muted);margin-top:12px">Nivel: ${quizLevel}</div>`);
+}
+function answerQuiz(){
+const selected=document.querySelector('input[name="answer"]:checked');
+if(!selected){alert("Elegí una respuesta.");return}
+const correct=exams[quizLevel][qi][2];
+answers.push({chosen:Number(selected.value),correct});
+if(Number(selected.value)===correct)score++;
+qi++;
+if(qi<exams[quizLevel].length){showQuestion();return}
+const total=exams[quizLevel].length;
+const percent=Math.round(score/total*100);
+const passed=percent>=70;
+openModal("Resultado del examen",`
+<div style="text-align:center;padding:15px">
+<div style="font-size:45px">${passed?"🏆":"📚"}</div>
+<div style="font-size:35px;font-weight:850">${percent}%</div>
+<h3>${passed?"¡Nivel aprobado!":"Seguí practicando"}</h3>
+<p>Respuestas correctas: ${score} de ${total}</p>
+<p>${passed?"Has alcanzado el mínimo requerido para aprobar.":"Necesitás un 70% para aprobar. Podés volver a intentarlo."}</p>
+</div>
+<h3>Revisión de respuestas</h3>
+${exams[quizLevel].map((q,i)=>`<p><b>${i+1}. ${q[0]}</b><br><span style="color:${answers[i].chosen===q[2]?"#67dba6":"#ff929e"}">${answers[i].chosen===q[2]?"Correcto":"Incorrecto"}</span> · Respuesta correcta: ${q[1][q[2]]}</p>`).join("")}
+<button class="action" onclick="closeModal()">Cerrar</button>
+<button class="action secondary" onclick="startQuiz('${quizLevel}')">Repetir</button>`);
+}
+
+function copyText(t){
+if(navigator.clipboard?.writeText){
+navigator.clipboard.writeText(t).then(()=>alert("Plantilla copiada.")).catch(()=>alert("No se pudo copiar."));
+}else{alert("Tu navegador no permite copiar automáticamente.")}
+}
+renderCommands();
+renderDictionary();
+renderBots();
+</script>
+</body>
+</html>
